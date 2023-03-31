@@ -21,15 +21,15 @@ except Exception as e:
     print("Error:", e)
 
 symbol='ETH/USDT'
-granularity = '1d'
-start_date = "19 June, 2022"
+granularity = '1h'
+start_date = "10 March, 2023"
 utc_start_s = datetime.datetime.strptime(start_date, '%d %B, %Y').replace(tzinfo=datetime.timezone.utc).timestamp()
-end_date =  "19 March, 2023"
+end_date =  "20 March, 2023"
 utc_stop_s = datetime.datetime.strptime(end_date, '%d %B, %Y').replace(tzinfo=datetime.timezone.utc).timestamp()
 delta_time_s = (utc_stop_s-utc_start_s)
 span = delta_time_s/60./30 # number of 30m intervals from start to end
 
-ohlcv_btceur_binance = np.array(ccxtBinance.fetchOHLCV (symbol, timeframe = granularity, since = int(utc_start_s*1000), limit=int(span)))
+ohlcv_btceur_binance = np.array(ccxtBinance.fetchOHLCV(symbol, timeframe = granularity, since = int(utc_start_s*1000), limit=int(span)))
 
 df_ohlcv_btceur_binance = pd.DataFrame(ohlcv_btceur_binance.reshape(-1, 6), dtype=float, columns=('Open Time','Open','High','Low','Close','Volume'))
 df_ohlcv_btceur_binance['Open Time'] = pd.to_datetime(df_ohlcv_btceur_binance['Open Time'], unit='ms')
@@ -41,27 +41,31 @@ fig = go.Figure(data=[go.Candlestick(x=df_ohlcv_btceur_binance['Open Time'],
                 low=df_ohlcv_btceur_binance['Low'],
                 close=df_ohlcv_btceur_binance['Close'])])
 fig.update_yaxes(title_text=symbol)
-fig.update_layout(title = "OHLCV from  Binance")
+fig.update_layout(title = "OHLCV from Binance")
 fig.show()
 
 
 # Define trading parameters
-# symbol = 'BTC/USDT'
-# amount = 0.01
-# buy_level = 0.618
-# sell_level = -0.236
-# stop_loss = 0.71
+amount = 0.01
+buy_level = 0.618
+sell_level = -0.236
+stop_loss = 0.71
 
 # # Retrieve current price data
-# ticker = exchange.fetch_ticker(symbol)
-# price = ticker['close']
+ticker = ccxtBinance.fetch_ticker(symbol)
+price = ticker['close']
+print(price)
 
 # # Calculate Fibonacci levels
-# high = ticker['high']
-# low = ticker['low']
-# diff = high - low
-# fib_618 = high - (diff * buy_level)
-# fib_neg_236 = high - (diff * abs(sell_level))
+high = ticker['high']
+print(high)
+low = ticker['low']
+print(low)
+diff = high - low
+fib_618 = high - (diff * buy_level)
+print(fib_618)
+fib_neg_236 = high - (diff * abs(sell_level))
+print(fib_neg_236)
 
 # # Check if current price is below 61.8% level
 # if price < fib_618:
